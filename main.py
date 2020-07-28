@@ -30,11 +30,12 @@ def display_analysis(frame, model_ai, color:str):
     locations = get_locations(contours)
     if locations.any():
          # actualizando de direccion
-        for loc in locations:
+        for loc, c in zip(locations,contours):
+            figure = find_figure(c)
             cx, cy = loc
             cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
             cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
-        
+            cv2.putText(frame, figure , (cx,cy-5),font,1,(0,255,0),1)
 
 def escenario():
     model_ai = Model_AI()
@@ -43,15 +44,20 @@ def escenario():
     active = True
     mira = 0
     direction = -1
-    color='blue'
+    figures = ["cubo", "tetraedro", "esfera"]
+    color = 'red'
+    figure = figures[2]
     while active:
         center = np.int32([img.shape[0]//2, mira])
         frame = get_frame(img, center)
 
         # la funcion que devuelve la direccion de giro , el color detectado y la figura
-        located, new_dir = model_ai.search_by_color(frame, color) # <- -1, 0 1 ->
+        #located, new_dir = model_ai.search_by_color(frame, color) # <- -1, 0 1 ->
+        #located, new_dir = model_ai.search_by_figure(frame, figure)
+        located, new_dir = model_ai.serch_by_color_and_figure(frame, figure, color)
         if located:
             direction = new_dir
+            print(direction)
 
         display_analysis(frame, model_ai, color)
 
@@ -61,7 +67,7 @@ def escenario():
         if cv2.waitKey(1) == ord('q'):
             cv2.destroyAllWindows()
             break
-        mira += direction
+        mira += direction * 10
         if mira >= img.shape[1]:
             mira = 0
         elif mira < 0:
@@ -71,12 +77,19 @@ def camara():
     model_ai = Model_AI()
     cap = cv2.VideoCapture()
     active = cap.open("http://192.168.100.64:8080/videofeed")
+    #active = cap.open("media/video_prueba1.mp4")
 
-    color = 'red'
+    color = 'blue'
+
+    figures = ["cubo", "tetraedro", "esfera"]
+    figure = figures[0]
 
     while active:
         active, frame = cap.read()
-        located, new_dir = model_ai.search_by_color(frame, color)
+
+        #located, new_dir = model_ai.search_by_color(frame, color) # <- -1, 0 1 ->
+        #located, new_dir = model_ai.search_by_figure(frame, figure)
+        located, new_dir = model_ai.serch_by_color_and_figure(frame, figure, color)
 
         if located:
             print(new_dir)
@@ -89,5 +102,5 @@ def camara():
             break
 
 if __name__ == "__main__":
-    #escenario()
-    camara()
+    escenario()
+    #camara()

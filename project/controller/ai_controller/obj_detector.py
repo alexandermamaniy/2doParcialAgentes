@@ -37,18 +37,9 @@ class Model_AI():
                 self.current_direction = int(round(vector[0]))
         return located, self.current_direction
 
-    def analyze_image(self, img, color=None):
-        """
-        Aqué se analiza una imagen, recibe como argumentos.
-
-        Args:
-        - img: una imagen representada en una matris de forma (h, w, chanels)
-        - color: (opcional) el color especifico que se quiere detectar
-
-        Returns:
-        - color, un array de tres valores [B, G, R], si no detecto nada el varlor sera None
-        - direccion, Un numero entero entre -1 a 1,  izq = -1, der = 1, centrado = 0
-        """
+    def search_by_figure(self, img, figure:str, color=None):
+        figure = figure.lower()
+        located = False
         if color is None and not self.color_detected:
             color, self.current_direction = detect_color(img)
             if color is not None:
@@ -60,27 +51,61 @@ class Model_AI():
 
         if self.current_color is not None:
             mask = color_filter(img, self.current_color)
-            self.current_figure = figures(mask)
             contours = find_contours(mask)
             locations = get_locations(contours)
+            new_location = locations.copy()
+            for i in range(len(locations)):
+                found_figure = find_figure(contours[i])
+                if found_figure != figure:
+                    new_location = new_location[new_location!=locations[i]]
+                    if new_location.shape[0] >= 2:
+                        new_location = new_location.reshape(-1,2)
+                    else:
+                        new_location = np.array([])
+            locations = new_location
             center = np.int32(np.array(img.shape[:2]) // 2)
-            distances = np.linalg.norm(locations - np.array(list(reversed(center))), axis=1)
-            min_index = np.argmin(distances)
-            if distances.min() < UMBRAL:
-                self.current_direction = int(self.min_distance > distances.min()) * self.current_direction
-                self.min_distance = distances.min()
-                if self.current_direction == 0:
-                    self.color_detected = False
-                    self.current_color = None
-                    self.min_distance = UMBRAL
-                    self.current_direction = 0
-            elif distances.min() >= UMBRAL:
-                vector = locations[min_index] - np.array(list(reversed(center)))
-                vector = vector / (np.abs(vector).sum() * 0.5)
-                vector = np.tanh(vector)
-                self.current_direction = int(round(vector[0]))
 
-        return self.current_color, self.current_direction , self.current_figure
+            if locations.any():
+                located = self.current_direction == 0
+                distances = np.linalg.norm(locations - np.array(list(reversed(center))), axis=1)
+                min_index = np.argmin(distances)
+                if distances.min() < UMBRAL:
+                    self.current_direction = int(self.min_distance > distances.min()) * self.current_direction
+                    self.min_distance = distances.min()
+                    if self.current_direction == 0:
+                        self.color_detected = False
+                        self.current_color = None
+                        self.min_distance = UMBRAL
+                        self.current_direction = 0
+                elif distances.min() >= UMBRAL:
+                    vector = locations[min_index] - np.array(list(reversed(center)))
+                    vector = vector / (np.abs(vector).sum() * 0.5)
+                    vector = np.tanh(vector)
+                    self.current_direction = int(round(vector[0]))
+
+        return located, self.current_direction
+
+    def serch_by_color_and_figure(self, img, figure:str, color:str):
+        color = self.encode_color(color)
+        return self.search_by_figure(img, figure, color)
+
+
+
+def find_figure(c):
+    figure = None
+    area=cv2.contourArea(c)
+    if (area > 3000):
+        epsilon=0.009*cv2.arcLength(c,True)
+        approx=cv2.approxPolyDP(c,epsilon,True)
+        x,y,w,h = cv2.boundingRect(approx)
+        if len(approx) < 6:
+            figure = 'tetraedro'
+        elif len(approx) > 10 and len(approx) < 20:
+            figure = 'esfera'
+        else:
+            figure = 'cubo'
+    return figure
+
 
 
 def color_filter(img, color):
@@ -91,13 +116,14 @@ def color_filter(img, color):
     """
     c3, c2, c1 = max_color(color)
     mask = (img[:,:,c1] > img[:,:,c2]) * (img[:,:,c1] > img[:,:,c3])
-    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 10
+    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 30
     mask = mask * 255
     mask = np.uint8(mask)
     kernel = np.ones((5,5),np.uint8)
-    mask = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel, iterations = 4)
-    mask = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel)
     mask = cv2.dilate(mask,kernel,iterations=3)
+    mask = cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernel, iterations = 4)
+    mask = cv2.morphologyEx(mask,cv2.MORPH_CLOSE,kernel, iterations = 4)
+    #mask = cv2.erode(mask,kernel,iterations=3)
     dist_transform = cv2.distanceTransform(mask,cv2.DIST_L2,5)
     _, mask = cv2.threshold(dist_transform,0.4*dist_transform.max(),255,0)
     mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
@@ -127,13 +153,13 @@ def get_locations(contours):
 
 def detect_color(img):
     shape = img.shape[:2]
-    left  = [[shape[0]//2-20, 20], [shape[0]//2+20, 60]]
-    right = [[shape[0]//2-20, shape[1] - 60], [shape[0]//2+20, shape[1] - 20]]
+    left  = [[shape[0]//2-50, 20], [shape[0]//2+50, 60]]
+    right = [[shape[0]//2-50, shape[1] - 60], [shape[0]//2+50, shape[1] - 20]]
     (ly1, lx1), (ly2, lx2) = left
     (ry1, rx1), (ry2, rx2) = right
     left_part    = img[ly1: ly2, lx1: lx2]
     right_part   = img[ry1: ry2, rx1: rx2]
-    center_part  = img[shape[0]//2-20:shape[1]//2+20, shape[1]//2-20:shape[1]//2+20]
+    center_part  = img[shape[0]//2-50:shape[1]//2+20, shape[1]//2-50:shape[1]//2+20]
     left_color   = np.median(left_part, axis=(0,1))
     right_color  = np.median(right_part, axis=(0,1))
     center_color = np.median(center_part, axis=(0,1))
