@@ -9,6 +9,7 @@ class Model_AI():
         self.color_detected = False
         self.current_direction = 0
         self.current_color = None
+        self.current_figure = None
     def analyze_image(self, img, color=None):
         """
         Aqué se analiza una imagen, recibe como argumentos.
@@ -32,6 +33,7 @@ class Model_AI():
 
         if self.current_color is not None:
             mask = color_filter(img, self.current_color)
+            self.current_figure = figures(mask)
             contours = find_contours(mask)
             locations = get_locations(contours)
             center = np.int32(np.array(img.shape[:2]) // 2)
@@ -50,7 +52,8 @@ class Model_AI():
                 vector = vector / (np.abs(vector).sum() * 0.5)
                 vector = np.tanh(vector)
                 self.current_direction = int(round(vector[0]))
-        return self.current_color, self.current_direction
+
+        return self.current_color, self.current_direction , self.current_figure
 
 
 def color_filter(img, color):
@@ -123,3 +126,27 @@ def detect_color(img):
 def max_color(color):
     color = color[:3]
     return np.argsort(color)
+
+def figures(mask):
+    slice1Copy = np.uint8(mask)
+    slice = cv2.Canny(slice1Copy,1,100)
+    canny=cv2.Canny(slice,10,150)
+    canny=cv2.dilate(canny,None,iterations=1)
+    canny=cv2.erode(canny,None,iterations=1)
+    cnts,h = cv2.findContours(canny,cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    for c in cnts:
+        ret = ''
+        area=cv2.contourArea(c)
+        if (area > 3000):
+            epsilon=0.009*cv2.arcLength(c,True)
+            approx=cv2.approxPolyDP(c,epsilon,True)
+            x,y,w,h = cv2.boundingRect(approx)
+
+            if (len(approx) >= 6 and len(approx) <= 10) or (len(approx) == 4 and (w/h >= 0.95 or w/h <=1.05)):
+                ret = 'Cubo'
+            elif len(approx) == 4 or len(approx) == 3:
+                ret = 'Tetraedro'
+            elif len(approx) > 10:
+                ret = 'Esfera'
+    return ret
+

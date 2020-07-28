@@ -40,9 +40,8 @@ def escenario():
         frame = get_frame(img, center)
         #frame = cap.read()
 
-        # la funcion que devuelve la direccion de giro y el color detectado
-        color, new_dir = model_ai.analyze_image(frame) # <- -1, 0 1 ->
-        
+        # la funcion que devuelve la direccion de giro , el color detectado y la figura
+        color, new_dir, figura = model_ai.analyze_image(frame) # <- -1, 0 1 ->
         if color is not None:
             mask = color_filter(frame, color)
             contours = find_contours(mask)
