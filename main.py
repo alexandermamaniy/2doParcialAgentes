@@ -66,29 +66,31 @@ def escenario():
             mira = img.shape[1] -1 
 
 def camara():
+    model_ai = Model_AI()
     font = cv2.FONT_HERSHEY_SIMPLEX
     cap = cv2.VideoCapture()
-    active = cap.open("media/video_prueba2.mp4")
+    active = cap.open("http://192.168.100.64:8080/videofeed")
     while active:
         active, frame = cap.read()
         print(frame.shape)
-        color = [0,0,255]
-        mask = color_filter(frame, color)
-        contours = find_contours(mask)
-        cv2.drawContours(frame, contours, -1, color, 2)
-        locations = get_locations(contours)
-        for loc in locations:
-            cx, cy = loc
-            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
-            #Escribimos las coordenadas del centro
-            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
+        color, direccion, __ = model_ai.analyze_image(frame)
+        if color is not None:
+            mask = color_filter(frame, color)
+            contours = find_contours(mask)
+            cv2.drawContours(frame, contours, -1, color, 2)
+            locations = get_locations(contours)
+            for loc in locations:
+                cx, cy = loc
+                cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
+                #Escribimos las coordenadas del centro
+                cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
 
-        cv2.imshow("mask", mask)
-        cv2.imshow("Camara", frame)
+            cv2.imshow("mask", mask)
+            cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
             cv2.destroyAllWindows()
             break
 
 if __name__ == "__main__":
-    escenario()
-    #camara()
+    #escenario()
+    camara()
