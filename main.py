@@ -21,39 +21,40 @@ def get_frame(img, center):
     frame = frame.copy()
     return frame
 
+def display_analysis(frame, model_ai, color:str):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    encoded_color = model_ai.encode_color(color)
+    mask = color_filter(frame, encoded_color)
+    contours = find_contours(mask)
+    cv2.drawContours(frame, contours, -1, [255,0,0], 2)
+    locations = get_locations(contours)
+    if locations.any():
+         # actualizando de direccion
+        for loc in locations:
+            cx, cy = loc
+            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
+            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
+        
 
 def escenario():
-    font = cv2.FONT_HERSHEY_SIMPLEX
     model_ai = Model_AI()
     img = cv2.imread("media/Muestra.png")
 
-    #out = cv2.VideoWriter('muestra.mp4',cv2.VideoWriter_fourcc('M','J','P','G'), 10, (500,300))
-
     active = True
-    #cap = cv2.VideoCapture()
-    #active = cap.open("http://198.164.0.1:4040/video") #Ip cam
     mira = 0
     direction = -1
-    color=None
+    color='blue'
     while active:
         center = np.int32([img.shape[0]//2, mira])
         frame = get_frame(img, center)
-        #frame = cap.read()
 
-        # la funcion que devuelve la direccion de giro y el color detectado
-        color, new_dir = model_ai.analyze_image(frame) # <- -1, 0 1 ->
-        
-        if color is not None:
-            mask = color_filter(frame, color)
-            contours = find_contours(mask)
-            cv2.drawContours(frame, contours, -1, color, 2)
-            locations = get_locations(contours)
+        # la funcion que devuelve la direccion de giro , el color detectado y la figura
+        located, new_dir = model_ai.search_by_color(frame, color) # <- -1, 0 1 ->
+        if located:
             direction = new_dir
-            for loc in locations:
-                cx, cy = loc
-                cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
-                cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
-        
+
+        display_analysis(frame, model_ai, color)
+
         cv2.imshow("Camara", frame)
         #if (mira % 5 == 0):
         #    out.write(frame)
@@ -67,23 +68,21 @@ def escenario():
             mira = img.shape[1] -1 
 
 def camara():
-    font = cv2.FONT_HERSHEY_SIMPLEX
+    model_ai = Model_AI()
     cap = cv2.VideoCapture()
-    active = cap.open("media/video_prueba4.mp4")
+    active = cap.open("http://192.168.100.64:8080/videofeed")
+
+    color = 'red'
+
     while active:
         active, frame = cap.read()
-        color = [0,255,0]
-        mask = color_filter(frame, color)
-        contours = find_contours(mask)
-        cv2.drawContours(frame, contours, -1, color, 2)
-        locations = get_locations(contours)
-        for loc in locations:
-            cx, cy = loc
-            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
-            #Escribimos las coordenadas del centro
-            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
+        located, new_dir = model_ai.search_by_color(frame, color)
 
-        cv2.imshow("mask", mask)
+        if located:
+            print(new_dir)
+
+        display_analysis(frame, model_ai, color)
+
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
             cv2.destroyAllWindows()
