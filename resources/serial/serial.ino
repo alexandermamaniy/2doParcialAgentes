@@ -1,148 +1,121 @@
 #include <Servo.h>
+#include <NewPing.h>
+// Motor A
+int ENA = 10;
+int IN1 = 9;
+int IN2 = 8;
 
+// Motor B
+int ENB = 5;
+int IN3 = 7;
+int IN4 = 6;
+int velocidadMotor = 60;
+// Declaramos la variable para controlar el servo
+Servo servoMotor;
+//pines digitales puente h 
 
-struct Mov
-{
-    char key;     // key asociado al Led
-    int time;        // numero de pin asociado al Led
-};
-
-Mov movimientos[] = {
-                'W', 1000,                
-                'A', 1300,
-                'W', 1000,
-                'X', 1000,};
-int tamMov = sizeof(movimientos)/sizeof(Mov);
-int fin;
-
-char dato = ' ';
-Servo servo_pin_8;
-Servo servo_pin_9;
-Servo servo_pin_7;
+int disCm;
 
 void setup()
 {
-  Serial.begin( 9600 );
-  servo_pin_8.attach( 8 );
-  servo_pin_9.attach( 9 );
-  servo_pin_7.attach( 7 );
-}  
+  pinMode (ENA, OUTPUT);
+  pinMode (ENB, OUTPUT);
+  pinMode (IN1, OUTPUT);
+  pinMode (IN2, OUTPUT);
+  pinMode (IN3, OUTPUT);
+  pinMode (IN4, OUTPUT);
+  Serial.begin(9600);//iniciailzamos la comunicación
+  servoMotor.attach(3);
+  servoMotor.write(20);
+  Serial.println("conectado");
+}
 
-int aux=0;
 void loop()
+{ 
+  //disCm = sonar.ping_cm();
+  if(Serial.available() > 0)
+  {   
+    char dato = Serial.read();
+      if (dato == '0'){
+        Adelante();
+      }
+      else if (dato == '1'){
+        Derecha();
+      }
+      else if (dato == '2'){
+        Izquierda();
+      }
+      else if (dato == '3'){
+        Parar();
+      }
+      else if (dato == '4'){
+        //giro180();
+      }
+        else if (dato == '5'){
+        Atras();
+      }
+      else if (dato == 'A'){
+        servoMotor.write(20);
+      }
+      else if (dato == 'S'){
+        servoMotor.write(60);
+      }
+    //Serial.print(dato);
+  } 
+}
+void Atras ()
 {
-    if ( Serial.available()  >  0  ){     
-      dato = Serial.read();
-      
-
-      if ( dato == 'W' ){          
-       front();
-      }
-      else if ( dato  == 'S'){
-        back();
-      }
-      else if ( dato  == 'D'){
-        right();
-      }
-      else if ( dato == 'A'){
-        left();
-      }
-      else if ( dato == 'X'){
-        stopA();
-      }
-      else if ( dato  == 'T'){      
-        closeP();
-        
-      }
-      else if ( dato  == 'R'){
-        openP();
-      } 
-      else if(dato == 'M'){
-        monitoreo();
-      }
-      
-    }
-      
-
-    
+ //Direccion motor A
+ digitalWrite (IN1, HIGH);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, velocidadMotor); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, HIGH);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, velocidadMotor); //Velocidad motor B
 }
-void front(){
-      servo_pin_8.attach( 8 );
-      servo_pin_9.attach( 9 );
-      //servo_pin_8.write( 112 );
-      //servo_pin_9.write( 60 );
-      servo_pin_8.write( 122 );
-      servo_pin_9.write( 50 );
-
+void Adelante ()
+{
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, HIGH);
+ analogWrite (ENA, velocidadMotor); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, HIGH);
+ analogWrite (ENB, velocidadMotor); //Velocidad motor B
+}
+void Derecha ()
+{
+ //Direccion motor A
+ digitalWrite (IN1, HIGH);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, velocidadMotor); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, HIGH);
+ analogWrite (ENB, velocidadMotor); //Velocidad motor A
 }
 
-void stopA(){
-    servo_pin_8.write( 90 );
-    servo_pin_9.write( 90 );
-    servo_pin_8.detach();
-    servo_pin_9.detach();
+void Izquierda ()
+{
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, HIGH);
+ analogWrite (ENA, velocidadMotor); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, HIGH);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, velocidadMotor); //Velocidad motor A
 }
-
-void back(){
-      servo_pin_8.attach( 8 );
-      servo_pin_9.attach( 9 );
-      //servo_pin_8.write( 60 );
-      //servo_pin_9.write( 112 );
-      servo_pin_8.write( 30 );
-      servo_pin_9.write( 142 );
-
-}
-void right(){
-        servo_pin_8.attach( 8 );
-      servo_pin_9.attach( 9 );
-      servo_pin_8.write( 112 );
-      servo_pin_9.write( 112 );
-
-}
-void left(){
-      servo_pin_8.attach( 8 );
-      servo_pin_9.attach( 9 );
-      servo_pin_8.write( 60 );
-      servo_pin_9.write( 60 );
-
-}
-void closeP(){
-  servo_pin_7.attach( 7 );
-  servo_pin_7.write( 175 );
-}    
-void openP(){
-  servo_pin_7.attach( 7 );
-  servo_pin_7.write( 50 );
-}
-    
-void monitoreo(){
-    delay(1000);
-    for(int i=0; i<tamMov; i++){
-      fin = millis()+movimientos[i].time;
-      if ( movimientos[i].key == 'W' ){          
-       front();
-      }
-      else if ( movimientos[i].key  == 'S'){
-        back();
-      }
-      else if ( movimientos[i].key  == 'D'){
-        right();
-      }
-      else if ( movimientos[i].key == 'A'){
-        left();
-      }
-      else if ( movimientos[i].key == 'X'){
-        stopA();
-      }
-      else if ( movimientos[i].key  == 'T'){
-        closeP();
-      }
-      else if ( movimientos[i].key  == 'R'){
-        openP();
-      }      
-      while( millis()<fin ){                       
-      }
-      Serial.println( (String)movimientos[i].key+"_"+(String)movimientos[i].time );
-    }
-    Serial.println( "termino_T" );
+void Parar ()
+{
+ //Direccion motor A
+ digitalWrite (IN1, LOW);
+ digitalWrite (IN2, LOW);
+ analogWrite (ENA, 0); //Velocidad motor A
+ //Direccion motor B
+ digitalWrite (IN3, LOW);
+ digitalWrite (IN4, LOW);
+ analogWrite (ENB, 0); //Velocidad motor A
 }
