@@ -9,6 +9,27 @@ class Model_AI():
         self.color_detected = False
         self.current_direction = 0
         self.current_color = None
+    
+    def search_by_color(self, img, color):
+        located = False
+        mask = color_filter(img, self.current_color)
+        contours = find_contours(mask)
+        locations = get_locations(contours)
+        center = np.int32(np.array(img.shape[:2]) // 2)
+        if locations is not None:
+            distances = np.linalg.norm(locations - np.array(list(reversed(center))), axis=1)
+            min_index = np.argmin(distances)
+            if distances.min() < UMBRAL:
+                self.current_direction = int(self.min_distance > distances.min()) * self.current_direction
+                self.min_distance = distances.min()
+                located = self.current_direction == 0
+            else:
+                vector = locations[min_index] - np.array(list(reversed(center)))
+                vector = vector / (np.abs(vector).sum() * 0.5)
+                vector = np.tanh(vector)
+                self.current_direction = int(round(vector[0]))
+        return located, self.current_direction
+
     def analyze_image(self, img, color=None):
         """
         Aqué se analiza una imagen, recibe como argumentos.
@@ -61,7 +82,7 @@ def color_filter(img, color):
     """
     c3, c2, c1 = max_color(color)
     mask = (img[:,:,c1] > img[:,:,c2]) * (img[:,:,c1] > img[:,:,c3])
-    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 30
+    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 10
     mask = mask * 255
     mask = np.uint8(mask)
     kernel = np.ones((5,5),np.uint8)
@@ -81,7 +102,7 @@ def find_contours(mask):
     return contours
 
 def get_locations(contours):
-    locations = []
+    locations = None
     for i in contours:
         #Calcular el centro a partir de los momentos
         momentos = cv2.moments(i)

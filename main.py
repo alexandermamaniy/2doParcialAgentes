@@ -69,11 +69,10 @@ def escenario():
 def camara():
     font = cv2.FONT_HERSHEY_SIMPLEX
     cap = cv2.VideoCapture()
-    active = cap.open("media/video_prueba2.mp4")
+    active = cap.open("media/video_prueba4.mp4")
     while active:
         active, frame = cap.read()
-        print(frame.shape)
-        color = [0,0,255]
+        color = [0,255,0]
         mask = color_filter(frame, color)
         contours = find_contours(mask)
         cv2.drawContours(frame, contours, -1, color, 2)
@@ -91,5 +90,5 @@ def camara():
             break
 
 if __name__ == "__main__":
-    escenario()
-    #camara()
+    #escenario()
+    camara()
