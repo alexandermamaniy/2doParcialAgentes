@@ -20,36 +20,26 @@ python main.py
 python3 main.py
 ```
 
-## test video
-
-En el archivo main.py cambien la siguiente linea:
-
-de:
-```python
-if __name__ == "__main__":
-    escenario()
-    #camara()
+## Recurso Arduino
+- El codigo fuente del arduino se encuentra en el siguiente directorio
 
 ```
+resources/serial/serial.ino
+```
 
-```python
-if __name__ == "__main__":
-    #escenario()
-    camara()
+## Recurso Fotografia
+- Las fotografias del robot interactuando con las figuras se encuentra en el siguiente directorio
 
 ```
-Ejecutamos:
+fotos/
 ```
-python main.py
-# o
-python3 main.py
-```
+
 
 ## Autores
 
-* **Willy Samuel Paz Colque** - *Reconocimiento de Objetos*
-* **Adrian Cuba** - *Identificacion de figuras*
-* **Alex Mamani** - *Robotica*
-* **Alex Marquez** - *Robotica*
-* **Diana** - *(Su trabajo)*
-* **Samantha Zambrana** - *(Su trabajo)*
+* **Willy Samuel Paz Colque** - 
+* **Adrian Cuba** - 
+* **Alex Mamani** - 
+* **Alex Marquez** - 
+* **Diana** -
+* **Samantha Zambrana** -
