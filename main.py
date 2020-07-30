@@ -23,17 +23,21 @@ def buscarPorFiguraColor(figure, color, dir_camera):
     model_ai = Model_AI()
     cap = cv2.VideoCapture()
     active = cap.open(dir_camera)
-    robot = Robot()    
+    # robot = Robot()    
     while active:
         active, frame = cap.read()
         located, new_dir = model_ai.serch_by_color_and_figure(frame, figure, color)
         if located:
+            print(new_dir)
             if new_dir == -1:
-                robot.izquierda()
+                pass
+                # robot.izquierda()
             elif new_dir == 1:
-                robot.derecha()
+                pass
+                # robot.derecha()
             else:
-                robot.detener()
+                pass
+                # robot.detener()
 
         display_analysis(frame, model_ai, color)
 
@@ -48,19 +52,23 @@ def buscarPorFigura(figure, dir_camera):
     model_ai = Model_AI()
     cap = cv2.VideoCapture()
     active = cap.open(dir_camera)
-    robot = Robot()    
+    # robot = Robot()    
     while active:
         active, frame = cap.read()
         located, new_dir =  model_ai.search_by_figure(frame, figure)
         if located:
+            print(new_dir)
             if new_dir == -1:
-                robot.izquierda()
+                pass
+                # robot.izquierda()
             elif new_dir == 1:
-                robot.derecha()
+                pass
+                # robot.derecha()
             else:
-                robot.detener()
+                pass
+                # robot.detener()
 
-        display_analysis(frame, model_ai, 'WHITE')
+        display_analysis(frame, model_ai )
 
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
@@ -71,17 +79,21 @@ def buscarPorColor(color, dir_camera):
     model_ai = Model_AI()
     cap = cv2.VideoCapture()
     active = cap.open(dir_camera)
-    robot = Robot()    
+    # robot = Robot()    
     while active:
         active, frame = cap.read()
         located, new_dir =  model_ai.search_by_color(frame, color)
         if located:
+            print(new_dir)
             if new_dir == -1:
-                robot.izquierda()
+                pass
+                # robot.izquierda()
             elif new_dir == 1:
-                robot.derecha()
+                pass
+                # robot.derecha()
             else:
-                robot.detener()
+                pass
+                # robot.detener()
 
         display_analysis(frame, model_ai, color)
 
@@ -95,7 +107,7 @@ if __name__ == "__main__":
     
     # variables para buscar
     # entrada de la camara
-    DIR_CAMERA = "http://192.168.100.83:8080/videofeed"
+    DIR_CAMERA = "http://192.168.1.2:4747/video"
     
     #COLOR = 'blue'
     #COLOR = 'red'
@@ -107,7 +119,7 @@ if __name__ == "__main__":
     
     # escenarios
 
-    #buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
-    #buscarPorFigura(FIGURE,  DIR_CAMERA )
-    buscarPorColor(COLOR, DIR_CAMERA )
+    # buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
+    buscarPorFigura(FIGURE,  DIR_CAMERA )
+    # buscarPorColor(COLOR, DIR_CAMERA )
     
