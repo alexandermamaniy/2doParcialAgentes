@@ -1,21 +1,30 @@
 #include <Servo.h>
 #include <NewPing.h>
+
+#define PIN_TRIG 12
+#define PIN_ECHO 11
+ 
+#define MAX_DISTANCE 200 // Constante para determinar la distancia máxima, que consideraremos correcta
+
 // Motor A
-int ENA = 10;
-int IN1 = 9;
-int IN2 = 8;
+int ENA = 2;
+int IN1 = 4;
+int IN2 = 3;
 
 // Motor B
 int ENB = 5;
 int IN3 = 7;
 int IN4 = 6;
-int velocidadMotor = 60;
+int velocidadMotor = 70;
 // Declaramos la variable para controlar el servo
 Servo servoMotor;
+//Declaramos las variables para utilizar el ultrasonico
+NewPing sonar(PIN_TRIG, PIN_ECHO, MAX_DISTANCE);
+
 //pines digitales puente h 
-
 int disCm;
-
+int periodo = 500;
+unsigned long TiempoAhora = 0;
 void setup()
 {
   pinMode (ENA, OUTPUT);
@@ -25,7 +34,8 @@ void setup()
   pinMode (IN3, OUTPUT);
   pinMode (IN4, OUTPUT);
   Serial.begin(9600);//iniciailzamos la comunicación
-  servoMotor.attach(3);
+   // Iniciamos el servo para que empiece a trabajar con el pin 12
+  servoMotor.attach(8);
   servoMotor.write(20);
   Serial.println("conectado");
 }
@@ -54,14 +64,17 @@ void loop()
         else if (dato == '5'){
         Atras();
       }
-      else if (dato == 'A'){
-        servoMotor.write(20);
+      else if(dato == 'SA'){
+         servoMotor.write(20);
       }
-      else if (dato == 'S'){
-        servoMotor.write(60);
+      else if(dato == 'SC'){
+         servoMotor.write(60);
       }
-    //Serial.print(dato);
   } 
+  if(millis() > TiempoAhora + periodo){
+        unsigned int distance = sonar.ping_cm();
+        Serial.print(distance);
+    }
 }
 void Atras ()
 {
