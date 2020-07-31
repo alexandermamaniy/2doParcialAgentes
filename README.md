@@ -12,6 +12,20 @@ pip install -r requirements.txt
 pip3 install -r requirements.txt
 ```
 
+## Configurando Variables del Proyecto
+
+- Modificar el archivo .env en la raiz del proyecto
+
+```
+$ vim .env
+```
+- Cambiar las variables del puerto Serial del Arduino y la URL de la camara en el archivo
+
+```
+USER_SERIAL=COM3
+DIR_CAMERA=http://192.168.1.2:4747/video
+```
+
 ## Ejecutar el codigo
 
 ```
