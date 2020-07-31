@@ -149,12 +149,11 @@ def searchPatronRobot(robot, dir_camera, funcion_callback, *args ):
 
 
 if __name__ == "__main__":
+    # variables de entorno
+    DIR_CAMERA = config('DIR_CAMERA')   # http://192.168.1.2:4747/video
+    portSerial = config('USER_SERIAL')  # COM3
 
-    # variables para buscar
-    # entrada de la camara
-    DIR_CAMERA = config('DIR_CAMERA')
-    portSerial = config('USER_SERIAL')
-    robot = Robot(portSerial) 
+    robot = Robot(portSerial)
 
     #COLOR = 'blue'
     COLOR = 'red'
@@ -166,14 +165,10 @@ if __name__ == "__main__":
     
     # escenarios
 
-    # buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
-    # buscarPorFigura(FIGURE,  DIR_CAMERA )
-    # buscarPorColor(robot, COLOR, DIR_CAMERA )
     model_ai = Model_AI()
     modelo_callback = model_ai.search_by_figure
     #modelo_callback = model_ai.search_by_color
-    #modelo_callback = model_ai.serch_by_color_and_figure
-    
+    #modelo_callback = model_ai.serch_by_color_and_figure    
 
     searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
     
