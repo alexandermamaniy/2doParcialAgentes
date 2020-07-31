@@ -5,6 +5,19 @@ UMBRAL = 60
 COLORS = ['blue', 'green', 'red']
 FIGURES = ['cube', 'tetrahedron', 'sphere']
 
+def display_analysis(frame, contours, locations, color):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    cv2.drawContours(frame, contours, -1, color, 2)
+    locations = get_locations(contours)
+    if locations.any():
+         # actualizando de direccion
+        for loc, c in zip(locations,contours):
+            figure = find_figure(c)
+            cx, cy = loc
+            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
+            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
+            cv2.putText(frame, figure , (cx,cy-5),font,1,(0,255,0),1)
+
 class Model_AI():
     def __init__(self):
         self.min_distance = UMBRAL
@@ -14,7 +27,8 @@ class Model_AI():
     
     def encode_color(self, color:str):
         encoded_color = (np.array(COLORS) == color).astype('int') * 255
-        return encoded_color
+        encoded_color = map(int, encoded_color)
+        return list(encoded_color)
     
     def search_by_color(self, img, color:str):
         self.current_color = self.encode_color(color)
@@ -23,8 +37,9 @@ class Model_AI():
         contours = find_contours(mask)
         locations = get_locations(contours)
         center = np.int32(np.array(img.shape[:2]) // 2)
+        display_analysis(img, contours, locations, self.current_color)
         if locations.any():
-            located = self.current_direction == 0
+            located = True
             distances = np.linalg.norm(locations - np.array(list(reversed(center))), axis=1)
             min_index = np.argmin(distances)
             if distances.min() < UMBRAL:
@@ -64,9 +79,9 @@ class Model_AI():
                         new_location = np.array([])
             locations = new_location
             center = np.int32(np.array(img.shape[:2]) // 2)
-
+            display_analysis(img, contours, locations, self.current_color)
             if locations.any():
-                located = self.current_direction == 0
+                located = True
                 distances = np.linalg.norm(locations - np.array(list(reversed(center))), axis=1)
                 min_index = np.argmin(distances)
                 if distances.min() < UMBRAL:
@@ -116,7 +131,7 @@ def color_filter(img, color):
     """
     c3, c2, c1 = max_color(color)
     mask = (img[:,:,c1] > img[:,:,c2]) * (img[:,:,c1] > img[:,:,c3])
-    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 30
+    mask = mask * (img[:,:,c1] - img[:,:,c2]) > 25
     mask = mask * 255
     mask = np.uint8(mask)
     kernel = np.ones((5,5),np.uint8)

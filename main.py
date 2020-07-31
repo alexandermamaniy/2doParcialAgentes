@@ -7,21 +7,6 @@ import signal
 import datetime
 
 
-def display_analysis(frame, model_ai, color:str):
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    encoded_color = model_ai.encode_color(color)
-    mask = color_filter(frame, encoded_color)
-    contours = find_contours(mask)
-    cv2.drawContours(frame, contours, -1, [255,0,0], 2)
-    locations = get_locations(contours)
-    if locations.any():
-         # actualizando de direccion
-        for loc, c in zip(locations,contours):
-            figure = find_figure(c)
-            cx, cy = loc
-            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
-            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
-            cv2.putText(frame, figure , (cx,cy-5),font,1,(0,255,0),1)
 
 # def buscarPorFiguraColor(figure, color, dir_camera):
 #     model_ai = Model_AI()
@@ -42,8 +27,6 @@ def display_analysis(frame, model_ai, color:str):
 #             else:
 #                 pass
 #                 # robot.detener()
-
-#         display_analysis(frame, model_ai, color)
 
 #         cv2.imshow("Camara", frame)
 #         if cv2.waitKey(1) == ord('q'):
@@ -71,8 +54,6 @@ def display_analysis(frame, model_ai, color:str):
 #             else:
 #                 pass
 #                 # robot.detener()
-
-#         display_analysis(frame, model_ai )
 
 #         cv2.imshow("Camara", frame)
 #         if cv2.waitKey(1) == ord('q'):
@@ -109,7 +90,7 @@ def buscarPorColor(robot, color, dir_camera):
                 lastTime = nowTime
                 # robot.derecha(segundosTrascurridos)
                 ultimoMovimiento = 'derecha'
-            elif new_dir == 0 and  distancia <= 9  and ultimoMovimiento != 'detenerse' :
+            elif new_dir == 0 and  distancia >= 9  and ultimoMovimiento != 'detenerse' :
                 print('se detiene')
                 nowTime = datetime.datetime.now()
                 segundosTrascurridos = (lastTime - nowTime).total_seconds()
@@ -155,9 +136,11 @@ def buscarPorColor(robot, color, dir_camera):
             print('dar giro de 180 grados')
             print('Indicar que ')            
             recogioObject = False
+            print('====lista de movimineto===')
+            for i in robot.movimientos:
+                print(i)
             signal.pause()
 
-        display_analysis(frame, model_ai, color)
 
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
@@ -174,11 +157,11 @@ if __name__ == "__main__":
     robot = Robot(portSerial) 
 
     #COLOR = 'blue'
-    #COLOR = 'red'
-    COLOR = 'green'
-    #FIGURE =  "cubo"
+    COLOR = 'red'
+    #COLOR = 'green'
+    FIGURE =  "cubo"
     #FIGURE =  "tetraedro"
-    FIGURE =  "esfera"
+    #FIGURE =  "esfera"
     
     
     # escenarios

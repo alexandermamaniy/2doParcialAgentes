@@ -10,7 +10,7 @@ class Robot():
         self.dataSensorUltraSonic = 0
         self.ultimoMovimiento = "detener"
         self.movimientos = []
-        self.movimientos.append(self.ultimoMovimiento)
+        self.movimientos.append(Movement(0, self.ultimoMovimiento))
         self.grabando = False
         # self.connection = ConnectSerial.getInstance(portSerial)
         # self.threadSensorUltraSonic()
@@ -21,28 +21,28 @@ class Robot():
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "avanzar"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     def derecha(self, timeLastMovement):
         self.connection.setDato('1')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "derecha"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     def izquierda(self, timeLastMovement):
         self.connection.setDato('2')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "izquierda"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     def detener(self, timeLastMovement):
         self.connection.setDato('3')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "detener"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
 
     def rotar180(self, timeLastMovement):
@@ -50,21 +50,21 @@ class Robot():
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "rotar180"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     def atras(self, timeLastMovement):
         self.connection.setDato('5')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "atras"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     def abrirPinza(self, timeLastMovement):        
         self.connection.setDato('SA')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "abrirPinza"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     
     def cerrarPinza(self, timeLastMovement):
@@ -72,7 +72,7 @@ class Robot():
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "cerrarPinza"
-            self.movimientos.append(self.ultimoMovimiento)
+            self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
 
     def __targetSensorUltraSonic(self):
@@ -85,6 +85,7 @@ class Robot():
                     raise Exception(f'dato invalido {value}')
             except Exception as e:
                 print(e)
+
 
     def threadSensorUltraSonic(self):
         threadPlayMovements = threading.Thread(target=self.__targetSensorUltraSonic)
