@@ -9,7 +9,7 @@ import datetime
 
 
 # def buscarPorFiguraColor(figure, color, dir_camera):
-#     model_ai = Model_AI()
+#    
 #     cap = cv2.VideoCapture()
 #     active = cap.open(dir_camera)
 #     # robot = Robot()    
@@ -60,8 +60,8 @@ import datetime
 #             cv2.destroyAllWindows()
 #             break
 
-def buscarPorColor(robot, color, dir_camera):
-    model_ai = Model_AI()
+def searchPatronRobot(robot, dir_camera, funcion_callback, *args ):
+    
     cap = cv2.VideoCapture()
     active = cap.open(dir_camera)
     recogioObject = False
@@ -70,7 +70,7 @@ def buscarPorColor(robot, color, dir_camera):
     ultimoMovimiento = robot.ultimoMovimiento
     while active:
         active, frame = cap.read()
-        located, new_dir =  model_ai.search_by_color(frame, color)
+        located, new_dir =  funcion_callback(frame, *args)
         if located and not recogioObject :
             print(new_dir, robot.dataSensorUltraSonic)
             distancia = robot.dataSensorUltraSonic
@@ -149,7 +149,7 @@ def buscarPorColor(robot, color, dir_camera):
 
 
 if __name__ == "__main__":
-    
+
     # variables para buscar
     # entrada de la camara
     DIR_CAMERA = config('DIR_CAMERA')
@@ -168,5 +168,12 @@ if __name__ == "__main__":
 
     # buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
     # buscarPorFigura(FIGURE,  DIR_CAMERA )
-    buscarPorColor(robot, COLOR, DIR_CAMERA )
+    # buscarPorColor(robot, COLOR, DIR_CAMERA )
+    model_ai = Model_AI()
+    modelo_callback = model_ai.search_by_figure
+    #modelo_callback = model_ai.search_by_color
+    #modelo_callback = model_ai.serch_by_color_and_figure
+    
+
+    searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
     

@@ -30,7 +30,7 @@ class Model_AI():
         encoded_color = map(int, encoded_color)
         return list(encoded_color)
     
-    def search_by_color(self, img, color:str):
+    def search_by_color(self, img, figure:str, color:str):
         self.current_color = self.encode_color(color)
         located = False
         mask = color_filter(img, self.current_color)
@@ -52,7 +52,8 @@ class Model_AI():
                 self.current_direction = int(round(vector[0]))
         return located, self.current_direction
 
-    def search_by_figure(self, img, figure:str, color=None):
+    def search_by_figure(self, img, figure:str, color):
+        color = None
         figure = figure.lower()
         located = False
         if color is None and not self.color_detected:
