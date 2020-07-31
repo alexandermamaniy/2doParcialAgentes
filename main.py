@@ -3,21 +3,6 @@ import numpy as np
 from project.controller.connection.robot import Robot
 from project.controller.ai_controller import *
 
-def display_analysis(frame, model_ai, color:str):
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    encoded_color = model_ai.encode_color(color)
-    mask = color_filter(frame, encoded_color)
-    contours = find_contours(mask)
-    cv2.drawContours(frame, contours, -1, [255,0,0], 2)
-    locations = get_locations(contours)
-    if locations.any():
-         # actualizando de direccion
-        for loc, c in zip(locations,contours):
-            figure = find_figure(c)
-            cx, cy = loc
-            cv2.circle(frame,(cx, cy), 3, (0,255,255), -1)
-            cv2.putText(frame,"(x: " + str(cx) + ", y: " + str(cy) + ")",(cx+10,cy+10), font, 0.5,(255,255,255),1)
-            cv2.putText(frame, figure , (cx,cy-5),font,1,(0,255,0),1)
 
 def buscarPorFiguraColor(figure, color, dir_camera):
     model_ai = Model_AI()
@@ -38,8 +23,6 @@ def buscarPorFiguraColor(figure, color, dir_camera):
             else:
                 pass
                 # robot.detener()
-
-        display_analysis(frame, model_ai, color)
 
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
@@ -68,8 +51,6 @@ def buscarPorFigura(figure, dir_camera):
                 pass
                 # robot.detener()
 
-        display_analysis(frame, model_ai )
-
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
             cv2.destroyAllWindows()
@@ -95,8 +76,6 @@ def buscarPorColor(color, dir_camera):
                 pass
                 # robot.detener()
 
-        display_analysis(frame, model_ai, color)
-
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):
             cv2.destroyAllWindows()
@@ -107,19 +86,20 @@ if __name__ == "__main__":
     
     # variables para buscar
     # entrada de la camara
-    DIR_CAMERA = "http://192.168.1.2:4747/video"
+    #DIR_CAMERA = "http://192.168.1.2:4747/video"
+    DIR_CAMERA = "media/video_prueba1.mp4"
     
     #COLOR = 'blue'
-    #COLOR = 'red'
-    COLOR = 'green'
-    #FIGURE =  "cubo"
+    COLOR = 'red'
+    #COLOR = 'green'
+    FIGURE =  "cubo"
     #FIGURE =  "tetraedro"
-    FIGURE =  "esfera"
+    #FIGURE =  "esfera"
     
     
     # escenarios
 
-    # buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
-    buscarPorFigura(FIGURE,  DIR_CAMERA )
+    buscarPorFiguraColor(FIGURE, COLOR, DIR_CAMERA )
+    # buscarPorFigura(FIGURE,  DIR_CAMERA )
     # buscarPorColor(COLOR, DIR_CAMERA )
     
