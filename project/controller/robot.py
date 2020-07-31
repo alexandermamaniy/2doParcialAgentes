@@ -14,7 +14,8 @@ class Robot():
         self.movimientos.append(Movement(0, self.ultimoMovimiento))
         self.grabando = False
         self.connection = ConnectSerial.getInstance(portSerial)
-        self.threadSensorUltraSonic()
+        #self.threadSensorUltraSonic()
+        #self.portSerial = portSerial
 
 
     def avanzar(self, timeLastMovement):
@@ -76,13 +77,13 @@ class Robot():
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
 
-    def __targetSensorUltraSonic(self):
+    def __targetSensorUltraSonic(clase):
         while True:
             try:
-                value = int(self.connection.getDato())
+                value = int(clase.connection.getDato())
                 print(value)
                 if isinstance(value,int):
-                    self.dataSensorUltraSonic = value
+                    clase.dataSensorUltraSonic = value
                 else:
                     raise Exception(f'dato invalido {value}')
             except Exception as e:
@@ -91,7 +92,7 @@ class Robot():
 
 
     def threadSensorUltraSonic(self):
-        threadPlayMovements = threading.Thread(target=self.__targetSensorUltraSonic)
+        threadPlayMovements = threading.Thread(target=self.__targetSensorUltraSonic, args=(self))
         threadPlayMovements.setDaemon(True)
         threadPlayMovements.start()
     
