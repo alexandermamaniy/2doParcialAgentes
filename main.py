@@ -5,7 +5,7 @@ from project.controller.robot import Robot
 from project.controller.ai_controller import *
 import signal
 import datetime
-
+import sys
 
 
 # def buscarPorFiguraColor(figure, color, dir_camera):
@@ -149,26 +149,100 @@ def searchPatronRobot(robot, dir_camera, funcion_callback, *args ):
 
 
 if __name__ == "__main__":
+    
     # variables de entorno
     DIR_CAMERA = config('DIR_CAMERA')   # http://192.168.1.2:4747/video
     portSerial = config('USER_SERIAL')  # COM3
 
     robot = Robot(portSerial)
-
-    #COLOR = 'blue'
-    COLOR = 'red'
-    #COLOR = 'green'
-    FIGURE =  "cubo"
-    #FIGURE =  "tetraedro"
-    #FIGURE =  "esfera"
-    
-    
-    # escenarios
-
     model_ai = Model_AI()
-    modelo_callback = model_ai.search_by_figure
-    #modelo_callback = model_ai.search_by_color
-    #modelo_callback = model_ai.serch_by_color_and_figure    
 
-    searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
+    menu = """Seleccion el escenario
+    1 - forma
+    2 - color
+    3 - forma y color
+    """ 
     
+    print(menu)
+    n = int(input())
+
+    if n == 1:
+        mensaje = """Escoja la forma
+        1 - TETRAEDRO
+        2 - ESFERA
+        3 - CUBO"""
+        print(mensaje)
+        n2 = int(input())
+        COLOR = None
+        if n == 1:
+            FIGURE =  "tetraedro"
+        elif n==2:
+            FIGURE =  "esfera"
+        elif n==3:
+            FIGURE =  "cubo"
+        else:
+            print('opcion invalida')
+            sys.exit(1)
+       
+        modelo_callback = model_ai.search_by_figure
+        searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
+    
+   
+    elif n==2:
+        mensaje = """Escoja el color
+        1 - ROJO
+        2 - AZUL
+        3 - VERDE"""
+        print(mensaje)
+        n2 = int(input())
+        FIGURE = None
+        if n2 == 1:
+            COLOR =  "red"
+        elif n2==2:
+            COLOR =  "blue"
+        elif n2==3:
+            COLOR =  "green"
+        else:
+            print('opcion invalida')
+            sys.exit(1)
+        modelo_callback = model_ai.search_by_color
+        searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
+
+    elif n==3:
+        mensaje = """Escoja la forma
+        1 - TETRAEDRO
+        2 - ESFERA
+        3 - CUBO"""
+        print(mensaje)
+        n2 = int(input())
+        if n2 == '1':
+            FIGURE =  "tetraedro"
+        elif n2=='2':
+            FIGURE =  "esfera"
+        elif n2=='3':
+            FIGURE =  "cubo"
+        else:
+            print('opcion invalida')
+            sys.exit(1)
+        mensaje = """Escoja el color
+        1 - ROJO
+        2 - AZUL
+        3 - VERDE"""
+        print(mensaje)
+        n2 = int(input())
+        if n2 == 1:
+            COLOR =  "red"
+        elif n2==2:
+            COLOR =  "blue"
+        elif n2==3:
+            COLOR =  "green"
+        else:
+            print('opcion invalida')
+            sys.exit(1)
+        
+        modelo_callback = model_ai.serch_by_color_and_fig
+        searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
+    else:
+        print('opcion invalida')
+        sys.exit(1)
+
