@@ -215,11 +215,11 @@ if __name__ == "__main__":
         3 - CUBO"""
         print(mensaje)
         n2 = int(input())
-        if n2 == '1':
+        if n2 == 1:
             FIGURE =  "tetraedro"
-        elif n2=='2':
+        elif n2==2:
             FIGURE =  "esfera"
-        elif n2=='3':
+        elif n2==3:
             FIGURE =  "cubo"
         else:
             print('opcion invalida')
@@ -240,7 +240,7 @@ if __name__ == "__main__":
             print('opcion invalida')
             sys.exit(1)
         
-        modelo_callback = model_ai.serch_by_color_and_fig
+        modelo_callback = model_ai.serch_by_color_and_figure
         searchPatronRobot(robot, DIR_CAMERA, modelo_callback,  FIGURE, COLOR )
     else:
         print('opcion invalida')
