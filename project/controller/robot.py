@@ -4,6 +4,7 @@
 from .connection.connectSerial import  ConnectSerial
 import threading
 from ..model.movimiento import Movement 
+import time
 class Robot():
  
     def __init__(self, portSerial):
@@ -12,8 +13,8 @@ class Robot():
         self.movimientos = []
         self.movimientos.append(Movement(0, self.ultimoMovimiento))
         self.grabando = False
-        # self.connection = ConnectSerial.getInstance(portSerial)
-        # self.threadSensorUltraSonic()
+        self.connection = ConnectSerial.getInstance(portSerial)
+        self.threadSensorUltraSonic()
 
 
     def avanzar(self, timeLastMovement):
@@ -46,7 +47,7 @@ class Robot():
 
 
     def rotar180(self, timeLastMovement):
-        #elf.connection.setDato('4')
+        self.connection.setDato('4')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "rotar180"
@@ -79,12 +80,14 @@ class Robot():
         while True:
             try:
                 value = int(self.connection.getDato())
+                print(value)
                 if isinstance(value,int):
                     self.dataSensorUltraSonic = value
                 else:
                     raise Exception(f'dato invalido {value}')
             except Exception as e:
                 print(e)
+            time.sleep(0.1)
 
 
     def threadSensorUltraSonic(self):

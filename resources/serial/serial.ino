@@ -15,7 +15,7 @@ int IN2 = 3;
 int ENB = 5;
 int IN3 = 7;
 int IN4 = 6;
-int velocidadMotor = 70;
+int velocidadMotor = 200;
 // Declaramos la variable para controlar el servo
 Servo servoMotor;
 //Declaramos las variables para utilizar el ultrasonico
@@ -73,7 +73,9 @@ void loop()
   } 
   if(millis() > TiempoAhora + periodo){
         unsigned int distance = sonar.ping_cm();
-        Serial.print(distance);
+        if(!isnan(distance)){
+           Serial.print(distance);
+        }
     }
 }
 void Atras ()

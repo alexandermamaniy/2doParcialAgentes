@@ -2,3 +2,5 @@
 env/
 project/controller/ai_controller/__pycache__
 pruebas
+*.pyc
+*.pyo
