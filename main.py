@@ -77,17 +77,46 @@ def searchPatronRobot(robot, dir_camera, funcion_callback, *args ):
 
         elif recogioObject:
             print('retornar')
+            for movimiento in robot.movimientos:
+                if movimiento.movement == 'avanzar':
+                    robot.avanzar()
+                    
+                elif movimiento.movement == 'detener':
+                    robot.detener()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'izquierda':
+                    robot.derecha()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'derecha':
+                    robot.izquierda()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'rotar180':
+                    robot.rotar180()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'atras':
+                    robot.atras()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'abrirPinza':
+                    robot.abrirPinza()
+                    time.sleep(movimiento.time)
+                elif movimiento.movement == 'cerrarPinza':
+                    robot.cerrarPinza()
+                    time.sleep(movimiento.time)
+            
             print('Abrir pinzas')
+            robot.abrirPinza()
             print('retroceder unos cm')
+            robot.atras()
+            time.sleep(1000)
+            robot.detener()
             print('dar giro de 180 grados')
+            robot.rotar180()
             print('Indicar que ')            
+            robot.movimientos = []
             recogioObject = False
-            print('====lista de movimineto===')
-            for i in robot.movimientos:
-                print(i)
-            #signal.pause()
-            #time.sleep(30)
-
+            robot.grabando = True
+            robot.detener()
+            ultimoMovimiento = robot.ultimoMovimiento
 
         cv2.imshow("Camara", frame)
         if cv2.waitKey(1) == ord('q'):

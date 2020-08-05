@@ -14,32 +14,32 @@ class Robot():
         self.movimientos.append(Movement(0, self.ultimoMovimiento))
         self.grabando = False
         self.connection = ConnectSerial.getInstance(portSerial)
-        #self.threadSensorUltraSonic()
-        #self.portSerial = portSerial
+        self.threadSensorUltraSonic()
+        self.portSerial = portSerial
 
 
-    def avanzar(self, timeLastMovement):
+    def avanzar(self, timeLastMovement=0):
         self.connection.setDato('0')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "avanzar"
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
-    def derecha(self, timeLastMovement):
+    def derecha(self, timeLastMovement=0):
         self.connection.setDato('1')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "derecha"
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
-    def izquierda(self, timeLastMovement):
+    def izquierda(self, timeLastMovement=0):
         self.connection.setDato('2')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "izquierda"
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
-    def detener(self, timeLastMovement):
+    def detener(self, timeLastMovement=0):
         self.connection.setDato('3')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
@@ -47,21 +47,21 @@ class Robot():
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
 
-    def rotar180(self, timeLastMovement):
+    def rotar180(self, timeLastMovement=0):
         self.connection.setDato('4')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "rotar180"
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
-    def atras(self, timeLastMovement):
+    def atras(self, timeLastMovement=0):
         self.connection.setDato('5')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
             self.ultimoMovimiento = "atras"
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
-    def abrirPinza(self, timeLastMovement):        
+    def abrirPinza(self, timeLastMovement=0):        
         self.connection.setDato('SA')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
@@ -69,7 +69,7 @@ class Robot():
             self.movimientos.append(Movement(0, self.ultimoMovimiento))
 
     
-    def cerrarPinza(self, timeLastMovement):
+    def cerrarPinza(self, timeLastMovement=0):
         self.connection.setDato('SC')
         if self.grabando:
             self.movimientos[-1].time = timeLastMovement
